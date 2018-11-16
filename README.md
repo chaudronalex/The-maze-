@@ -8,6 +8,6 @@ The maze is a program that will be able to build random mazes and solve them. Th
 ---Building---
 I'm planning to make a graph for the construction of the maze. I'll probably use an adjacency matrice, to have a rectangular maze (obviously) and have defined paths. I've read something about the Dijkstra's algorithm, to find the shortest path to solve the maze. I don't have a lot of content for the moment but I'll start the project very soon. I'm planning to do a console application. 
 
----Possible game features---
-A possible game feature once the maze is done is to create a sort of treasure hunt, where the user has to collect items. He could for example collect keys to open doors...
-There could also be monsters, from which the character has to escape.
+EDIT
+I chose to create the maze using a graph, instead of a matrix (which would be way more simple but I wanted to use what we say in class). I'm working on the random generation of the maze using a spanning tree, more precisely an algorithm with a depth first search. I'll do the first commit when it works, along with the print method. After that, I'll focus on the solving of the maze, using (I guess) the Dijkstra's algorithm. 
+ 
