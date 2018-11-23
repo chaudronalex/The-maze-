@@ -9,11 +9,13 @@ namespace TheMaze
     {
         private int size;
         private List<Cell> maze;
+        private Random rand;
       //  private Cell position;
 
         public Maze(int Size)
         {
             size = Size;
+            rand = new Random();
             maze = new List<Cell>();
             Generate();
         } 
@@ -30,7 +32,6 @@ namespace TheMaze
                 }
             }
             // choosing a random cell to begin with that is not on the edge of the maze
-            Random rand = new Random();
 
             //int number = rand.Next(0, size * size);
             //while (maze[number].X == 0 || maze[number].X == size || maze[number].Y == 0 || maze[number].Y == size)
@@ -62,37 +63,39 @@ namespace TheMaze
             // marking the cell as visited
             currentCell.Visited = true;
 
-            // creation of a temporary list with the neightbors of the cell
-            List<Cell> neightbors = new List<Cell>();
+            // creation of a temporary list with the neighbours of the cell
+            List<Cell> neighbour = new List<Cell>();
 
             if (Search(currentCell.X, currentCell.Y - 1) != null)
-                neightbors.Add(Search(currentCell.X, currentCell.Y - 1));
+                neighbour.Add(Search(currentCell.X, currentCell.Y - 1));
 
             if (Search(currentCell.X, currentCell.Y + 1) != null)
-                neightbors.Add(Search(currentCell.X, currentCell.Y + 1));
+                neighbour.Add(Search(currentCell.X, currentCell.Y + 1));
 
             if (Search(currentCell.X + 1, currentCell.Y) != null)
-                neightbors.Add(Search(currentCell.X + 1, currentCell.Y));
+                neighbour.Add(Search(currentCell.X + 1, currentCell.Y));
 
             if (Search(currentCell.X - 1, currentCell.Y) != null)
-                neightbors.Add(Search(currentCell.X - 1, currentCell.Y));
-
-            // shuffling the list of neightbors to select a random one
-            Random rand = new Random();
-            var shuffled = neightbors.OrderBy(a => rand.Next());
+                neighbour.Add(Search(currentCell.X - 1, currentCell.Y));
+                
+            // shuffling the list of neighbours to select a random one
+            var shuffled = neighbour.OrderBy(a => rand.Next());
+            //foreach(Cell c in shuffled)
+            //{
+            //    Console.Write("(" + c.X + "," + c.Y + ") ");
+            //}
+            //Console.WriteLine("");
 
             // Deep first search
             foreach (Cell c in shuffled)
             {
                 if (c.Visited == false)
                 {
-                    currentCell.Neightbors.Add(c);
-                    c.Neightbors.Add(currentCell);
+                    currentCell.Neighbour.Add(c);
+                    c.Neighbour.Add(currentCell);
                     Move(c);
                 }
             }
-
-    //       return maze;
         }
 
         public Cell Search(int x, int y)
@@ -167,14 +170,10 @@ namespace TheMaze
         //    }
         //}
 
-        public bool AreNeightbors(Cell c1, Cell c2) 
+        public bool AreNeighbours(Cell c1, Cell c2) 
         {
-            foreach (Cell c in c1.Neightbors)
+            foreach (Cell c in c1.Neighbour)
                 if (c == c2)
-                    return true;
-
-            foreach (Cell c in c2.Neightbors)
-                if (c == c1)
                     return true;
 
             return false;
@@ -199,7 +198,7 @@ namespace TheMaze
                 {
                     int x = (i * 2) + 1;
                     int y = (j * 2);
-                    if (AreNeightbors(Search(i, j), Search(i + 1, j)))
+                    if (AreNeighbours(Search(i, j), Search(i + 1, j)))
                         maze2[x, y] = 0;
 
                     else
@@ -212,7 +211,7 @@ namespace TheMaze
                 {
                     int x = (i * 2);
                     int y = (j * 2) + 1;
-                    if (AreNeightbors(Search(i, j), Search(i, j + 1)))
+                    if (AreNeighbours(Search(i, j), Search(i, j + 1)))
                         maze2[x, y] = 0;
 
                     else
