@@ -6,7 +6,8 @@ namespace TheMaze
     {
         public static void Main(string[] args)
         {
-            Maze test = new Maze(10);
+            Maze laby = new Maze(20);
+            laby.Print();
         }
     }
 }
