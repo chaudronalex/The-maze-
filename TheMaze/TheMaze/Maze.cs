@@ -10,7 +10,6 @@ namespace TheMaze
         private int size;
         private List<Cell> maze;
         private Random rand;
-      //  private Cell position;
 
         public Maze(int Size)
         {
