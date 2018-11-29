@@ -95,6 +95,11 @@ namespace TheMaze
             return false;
         }
 
+        public void ShortestPath()
+        {
+
+        }
+
         public int [,] GraphToMatrix() // for the print function
         {
             // we create an element in the matrix for each edge in the graph, so the matrix is two times bigger than the graph
@@ -148,6 +153,9 @@ namespace TheMaze
                     maze2[x, y] = 1;
                 }
             }
+            // setting the entrance and the exit 
+            maze2[0, 0] = 2;
+            maze2[(size * 2) - 2, (size * 2) - 2] = 2;
 
             return maze2;
         }
@@ -165,11 +173,20 @@ namespace TheMaze
                 Console.Write("##");
                 for (int j = 0; j < (size * 2) - 1; j++)
                 {
-                    if (matrix[i, j] == 0)
-                        Console.Write("  ");
-
-                    else
-                        Console.Write("##");
+                    switch(matrix[i, j])
+                    {
+                        case 0:
+                            Console.Write("  ");
+                            break;
+                        case 1:
+                            Console.Write("##");
+                            break;
+                        case 2:
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write("[]");
+                            Console.ResetColor();
+                            break;
+                   }
                 }
                 Console.Write("##");
                 Console.Write("\n");
