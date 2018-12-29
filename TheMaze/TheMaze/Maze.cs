@@ -68,10 +68,10 @@ namespace TheMaze
             // Deep first search
             foreach (Cell c in shuffled)
             {
-                if (c.Visited == false)
+                if (!c.Visited)
                 {
-                    currentCell.Neighbour.Add(c);
-                    c.Neighbour.Add(currentCell);
+                    currentCell.Neighbours.Add(c);
+                    c.Neighbours.Add(currentCell);
                     Move(c);
                 }
             }
@@ -88,16 +88,65 @@ namespace TheMaze
 
         public bool AreNeighbours(Cell c1, Cell c2) // verifying if two cells are neighbours in the graph (= no wall between them)
         {
-            foreach (Cell c in c1.Neighbour)
+            foreach (Cell c in c1.Neighbours)
                 if (c == c2)
                     return true;
 
             return false;
         }
 
-        public void ShortestPath()
+        public void ShortestPath() 
         {
+            // printing an error message if no path was found
+            if (!FindPath())
+                Console.WriteLine("\nNo path found\n");
 
+            List<Cell> path = new List<Cell>(); //tracing the path with help of the fathers
+            Cell dest = Search(size - 1, size - 1);
+            path.Add(dest);
+            while(dest.Father != null)
+            {
+                path.Add(dest.Father);
+                dest = dest.Father;
+            }
+
+            // for printing
+            foreach (Cell c in path)
+                c.State = Cell._state.path;
+        }
+
+        public bool FindPath()
+        {
+            Queue<Cell> queue = new Queue<Cell>(); 
+
+            foreach (Cell c in maze) //setting again all the cells to unvisited
+                c.Visited = false;
+
+            Cell source = Search(0, 0); // we start at the entry of the maze
+            source.Visited = true;
+            source.Dist = 0;
+            queue.Enqueue(source);
+
+            while (queue.Count != 0) // breadth first search   
+            {
+                Cell current = queue.Peek();
+                queue.Dequeue();
+                foreach (Cell c in current.Neighbours)
+                {
+                    if (!c.Visited)
+                    {
+                        c.Visited = true;
+                        c.Dist = current.Dist + 1;
+                        c.Father = current;
+                        queue.Enqueue(c);
+
+                        if (c == Search(size - 1, size - 1)) // when we arrive to the destination
+                            return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public int [,] GraphToMatrix() // for the print function
@@ -105,7 +154,7 @@ namespace TheMaze
             // we create an element in the matrix for each edge in the graph, so the matrix is two times bigger than the graph
             int[,] maze2 = new int[size * 2, size * 2];
 
-            // each cell is empty
+            // each cell is empty to begin with
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
@@ -113,40 +162,49 @@ namespace TheMaze
                     int x = i * 2;
                     int y = j * 2;
                     maze2[x, y] = 0;
+                    // if the path function was called and the cell is on the path
+                    if (Search(i, j).State == Cell._state.path)
+                        maze2[x, y] = 3;
                 }
             }
-            // putting a wall between two cells if they aren't neighbours
-            for (int i = 0; i < size - 1; i++)
+            // putting a wall between two cells if they aren't neighbours, or indicating if the cell is on the path (horizontally)
+            for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < size - 1; j++)
+                for (int j = 0; j < size; j++)
                 {
                     int x = (i * 2) + 1;
                     int y = (j * 2);
-                    if (AreNeighbours(Search(i, j), Search(i + 1, j)))
-                        maze2[x, y] = 0;
-
-                    else
+                    if (!AreNeighbours(Search(i, j), Search(i + 1, j)))
                         maze2[x, y] = 1;
+
+                    else 
+                    {
+                        if (Search(i, j).State == Cell._state.path && Search(i + 1, j).State == Cell._state.path)
+                            maze2[x, y] = 3;
+                    }
                 }
             }
-            // putting a wall between two cells if they aren't neighbours
-            for (int i = 0; i < size - 1; i++)
+            // putting a wall between two cells if they aren't neighbours, or indicating if the cell is on the path (vertically)
+            for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < size - 1; j++)
+                for (int j = 0; j < size; j++)
                 {
                     int x = (i * 2);
                     int y = (j * 2) + 1;
-                    if (AreNeighbours(Search(i, j), Search(i, j + 1)))
-                        maze2[x, y] = 0;
+                    if (!AreNeighbours(Search(i, j), Search(i, j + 1)))
+                        maze2[x, y] = 1;
 
                     else
-                        maze2[x, y] = 1;
+                    {
+                        if (Search(i, j).State == Cell._state.path && Search(i, j + 1).State == Cell._state.path)
+                            maze2[x, y] = 3;
+                    }
                 }
             }
             // every element that isn't a cell nor an edge is a wall
-            for (int i = 0; i < size - 1; i++)
+            for (int i = 0; i < size; i++)
             {
-                for (int j = 0; j < size - 1; j++)
+                for (int j = 0; j < size; j++)
                 {
                     int x = (i * 2) + 1;
                     int y = (j * 2) + 1;
@@ -186,7 +244,12 @@ namespace TheMaze
                             Console.Write("[]");
                             Console.ResetColor();
                             break;
-                   }
+                        case 3:
+                            Console.ForegroundColor = ConsoleColor.DarkGreen;
+                            Console.Write("**");
+                            Console.ResetColor();
+                            break;
+                    }
                 }
                 Console.Write("##");
                 Console.Write("\n");
@@ -194,6 +257,8 @@ namespace TheMaze
 
             for (int a = 0; a < (size * 2) + 1; a++)
                 Console.Write("##");
+
+            Console.Write("\n\n");
         }
     }
 }

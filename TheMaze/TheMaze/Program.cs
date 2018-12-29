@@ -8,6 +8,8 @@ namespace TheMaze
         {
             Maze laby = new Maze(20);
             laby.Print();
+            laby.ShortestPath();
+            laby.Print();
         }
     }
 }
