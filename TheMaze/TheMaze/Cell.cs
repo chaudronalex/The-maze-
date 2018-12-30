@@ -11,11 +11,11 @@ namespace TheMaze
         private bool visited;
         private Cell father;
         private _state state;
-        private int dist; // distance to the source cell for the shortest path
+        private int dist; // distance to the source cell 
 
         public enum _state 
         {
-            entrance, exit, current, path, normal,
+            path, normal,
         }
 
         public Cell(int X, int Y)
